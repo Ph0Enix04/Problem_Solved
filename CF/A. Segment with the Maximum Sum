@@ -1,0 +1,99 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define endl '\n'
+#define pb push_back
+#define fr freopen("input.txt","r",stdin)
+#define fw freopen("output.txt","w",stdout)
+#define For(start, end) for(int i = (start); i < (end); i++)
+#define no "NO"
+#define yes "YES"
+#define all(x) x.begin(), x.end()
+#define allr(x) x.rbegin(), x.rend()
+#define len(x) (ll)x.size()
+
+struct Node 
+{
+    ll seg, pref, suf, sum;
+    Node(): seg(0), pref(0), suf(0), sum(0) {}
+    Node(ll val) 
+    {
+        sum = val;
+        seg = pref = suf = std::max(0LL, val);
+    }
+};
+
+class SegmentTree 
+{
+    int n;
+    vector<Node> tree;
+    vector<ll> arr;
+    Node merge(const Node& a, const Node& b) 
+{
+        Node res;
+        res.sum  = a.sum + b.sum;
+        res.pref = max(a.pref, a.sum + b.pref);
+        res.suf  = max(b.suf, b.sum + a.suf);
+        res.seg  = max({a.seg, b.seg, a.suf + b.pref});
+        return res;
+    }
+    void build(int node, int l, int r) 
+  {
+        if (l == r) 
+        {
+            tree[node] = Node(arr[l]);
+            return;
+        }
+        int m = (l + r) >> 1;
+        build(node << 1, l, m);
+        build(node << 1 | 1, m + 1, r);
+        tree[node] = merge(tree[node << 1], tree[node << 1 | 1]);
+    }
+    void upd(int node, int l, int r, int idx, ll val) 
+      {
+        if (l == r) 
+        {
+            arr[idx] = val;
+            tree[node] = Node(val);
+            return;
+        }
+        int m = (l + r) >> 1;
+        if (idx <= m) upd(node << 1, l, m, idx, val);
+        else upd(node << 1 | 1, m + 1, r, idx, val);
+        tree[node] = merge(tree[node << 1], tree[node << 1 | 1]);
+    }
+public:
+    SegmentTree(const vector<ll>& v) 
+{
+        arr = v;
+        n = v.size();
+        tree.assign(4 * n, Node());
+        build(1, 0, n - 1);
+    }
+    void update(int idx, ll val) { upd(1, 0, n - 1, idx, val); }
+    ll best() const { return tree[1].seg; }
+};
+
+void solve() 
+{
+    ll n, m; cin >> n >> m;
+    vector<ll> v(n);
+    For(0, n) cin >> v[i];
+    SegmentTree st(v);
+    cout << st.best() << endl;
+    while (m--) 
+    {
+        ll idx, val; cin >> idx >> val;
+        st.update(idx, val);
+        cout << st.best() << endl;
+    }
+}
+
+int32_t main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    solve();
+    return 0;
+}
+
