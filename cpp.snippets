@@ -1,0 +1,222 @@
+snippet snap
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define endl '\n'
+#define pb push_back
+#define fr freopen("input.txt","r",stdin)
+#define fw freopen("output.txt","w",stdout)
+#define For(start, end) for(int i = (start); i < (end); i++)
+#define no "NO"
+#define yes "YES"
+#define all(x) x.begin(), x.end()
+#define allr(x) x.rbegin(), x.rend()
+#define len(x) (ll)x.size()
+using ull = unsigned long long;
+const long long INF = 1000000000000000000ll;
+typedef pair<int, int>ii;
+typedef vector<int>vi;
+typedef vector<pair<ll, ll>>vll;
+typedef vector<ll>vl;
+typedef vector<ii> vii;
+int dx[] = {-1,1, 0, 0, -1,-1, 1, 1};
+int dy[] = {0, 0, -1, 1, -1, 1, -1, 1};
+const unsigned int MOD = 1000000007;
+template <typename T> T mod_exp(T b, T p, T m){T x = 1;while(p){if(p&1)x=(x*b)%m;b=(b*b)%m;p=p>>1;}return x;}
+template <typename T> T invFermat(T a, T p){return mod_exp(a, p-2, p);}
+template <typename T> T exp(T b, T p){T x = 1;while(p){if(p&1)x=(x*b);b=(b*b);p=p>>1;}return x;}
+//ll gcd(ll A, ll B) { return __gcd(A, B); }
+//ll lcm(ll a, ll b) { return a * (b / gcd(a, b)); }
+// DSU---topSort---floyd--cycleCheck---
+//ordered_set---KMP---custom_hash---
+ 
+void solve() 
+{
+	
+}
+ 
+int32_t main() 
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    ll TC = 1;
+//	cin >> TC;
+    while (TC--) 
+    {
+        solve();
+    }
+}
+endsnippet
+snippet ordered_set
+
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+template <typename T> using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+endsnippet
+snippet topSort
+//#define N 1e5;
+//vector<bool>vis(N);
+//vector<ll>ts;
+//vector<pair<int, int>>adj[N];
+void topsort(ll u)
+{
+	vis[u] = true;
+	for(auto &[v, w]==false)
+	{
+		topsort(v);
+	}
+	ts.push_back(u);
+}
+
+endsnippet
+
+snippet DSU
+
+class DSU {                            
+private:
+  vi p, rank, setSize;                         
+  int numSets;
+public:
+  DSU(int N) {
+    p.assign(N, 0); for (int i = 0; i < N; ++i) p[i] = i;
+    rank.assign(N, 0);                         
+    setSize.assign(N, 1);                      
+    numSets = N;                                
+  }
+
+  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+
+  int numDisjointSets() { return numSets; }      
+  int sizeOfSet(int i) { return setSize[findSet(i)]; }
+
+  void unionSet(int i, int j) {
+    if (isSameSet(i, j)) return;                
+    int x = findSet(i), y = findSet(j);        
+    if (rank[x] > rank[y]) swap(x, y);         
+    p[x] = y;                                   
+    if (rank[x] == rank[y]) ++rank[y];          
+    setSize[y] += setSize[x];                  
+    --numSets;                                  
+  }
+};
+endsnippet
+
+snippet floyd
+
+void floyd()
+{
+	for(int k = 0; k < n; k++)
+	{
+		for(int i = 0; i < n; i++)
+		{
+			for(int j = 0; j < n; j++)
+			{
+				if(adj[i][k]<INF && adj[k][j]<INF)
+					adj[i][j] = min(adj[i][j], adj[i][k]+adj[k][j]);
+			}
+		}
+	}
+	for(int i = 0; i < n; i++)
+	{
+		for(int j = 0; j < n; j++)
+		{
+			for(int k = 0;k < n; k++)
+			{
+				if(adj[i][j]==-INF)break;
+				if(adj[k][k]<0 && adj[i][k]!=INF && adj[k][j] !=INF)
+					adj[i][j] = -INF;
+			}
+		}
+	}
+}
+endsnippet
+
+snippet cycleCheck
+
+bool cycleCheck(int u)
+{
+ 
+	vis[u] = 1;
+	for(auto &v: adj[u])
+	{
+		if(vis[v]==0)
+		{
+			parent[v] = u;
+			if(cycleCheck(v))return true;
+		}
+		else if(vis[v]==1)
+		{
+			if(v!=parent[u])
+			{
+				start = v;
+				en = u;
+				return true;
+				break;
+			}
+		}
+ 
+	}
+	vis[u] = 2;
+	return false;
+}
+
+endsnippet
+
+snippet KMP
+vi b;
+void kmpPP(string p)
+{
+	int m = (int)p.size();
+	b.assign(m+2, 0);
+
+	int i = 0, j = -1; b[0] = -1;
+	while(i<m)
+
+	{
+		while ((j >= 0) && (p[i] != p[j])) j = b[j];;
+		++i; ++j;
+		b[i] = j;
+	}
+}
+int kmpSearch(string s, string p)
+{
+	//kmpPP(p);
+	ll count = 0;
+	ll n = (int)s.size();
+	ll m =(int)p.size();
+	int i = 0, j = 0;
+	while(i<n)
+	{
+		while((j>=0) && (s[i]!=p[j])) j = b[j];
+		i++;
+		++j;
+		if(j==m)
+		{
+			count++;
+			j = b[j];
+		}
+	}
+	return count;	
+}
+endsnippet
+
+snippet custom_hash
+
+struct custom_hash {
+    static uint64_t splitmix64(uint64_t x) {
+        x += 0x9e3779b97f4a7c15;
+        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+        x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+        return x ^ (x >> 31);
+    }
+
+    size_t operator()(uint64_t x) const {
+        static const uint64_t FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count();
+        return splitmix64(x + FIXED_RANDOM);
+    }
+};
+
+endsnippet
